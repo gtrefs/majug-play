@@ -1,0 +1,9 @@
+# Blog REST API
+# Resource Collection
+GET     /api/entries               controllers.Entries.list()
+POST    /api/entries               controllers.Entries.create()
+
+# Entry
+GET     /api/entries/:id           controllers.Entries.show(id: Integer)
+PUT     /api/entries/:id           controllers.Entries.update(id: Integer)
+DELETE  /api/entries/:id           controllers.Entries.delete(id: Integer)
