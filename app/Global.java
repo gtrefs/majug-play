@@ -19,7 +19,7 @@ public class Global extends GlobalSettings {
 	
 	private void addSeedEntries() {
 		saveEntry("First entry", "New blog. A lot of fun.");
-		saveEntry("Second: Talk abut play", "A lot of technical details.");
+		saveEntry("Second: Talk about play", "A lot of technical details.");
 	}
 
 	private void saveEntry(String title, String message) {

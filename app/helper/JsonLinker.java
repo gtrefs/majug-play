@@ -14,20 +14,35 @@ import com.google.common.collect.Lists;
 
 import controllers.routes;
 
-public abstract class JsonLinker<T> {
+public abstract class JsonLinker {
 	
-	public static JsonLinker<JsonNode> from(List<Entry> entries){
+	public static JsonLinker from(List<Entry> entries){
 		return new EntriesCollectionResourceLinker(entries);
 	}
 	
-	public abstract T to();
+	public static JsonLinker from(Entry entry){
+		return new EntryResourceLinker(entry);
+	}
 	
-	protected Link selfEntryLink(JsonNode entry) {
+	public abstract JsonNode to();
+	
+	protected JsonNode appendEntryLinks(JsonNode entry){
+		checkArgument(entry.isObject(), "Entry is not an object node.");
+		final List<Link> links = Lists.newArrayList(selfEntryLink(entry), entriesCollectionLink());
+		((ObjectNode) entry).put("_links", Json.toJson(links));
+		return entry;
+	}
+	
+	private Link selfEntryLink(JsonNode entry) {
 		final Integer id = entry.get("id").asInt();
 		return Link.make(routes.Entries.show(id).url(), LinkTypes.SELF.asLowerCase());
 	}
 	
-	private static class EntriesCollectionResourceLinker extends JsonLinker<JsonNode> {
+	private Link entriesCollectionLink() {
+		return Link.make(routes.Entries.list().url(), LinkTypes.COLLECTION.asLowerCase());
+	}
+	
+	private static class EntriesCollectionResourceLinker extends JsonLinker {
 		
 		private final List<Entry> entries;
 		
@@ -63,21 +78,24 @@ public abstract class JsonLinker<T> {
 		private JsonNode createEmbeddedEntries() {
 			return Json.toJson(entries.stream()
 					.map(Json::toJson)
-					.map(this::appendLinks)
+					.map(this::appendEntryLinks)
 					.collect(Collectors.toList()));
 		}
-		
-		private JsonNode appendLinks(JsonNode entry){
-			checkArgument(entry.isObject(), "Entry is not an object node.");
-			final List<Link> links = Lists.newArrayList(selfEntryLink(entry), entriesCollectionLink());
-			((ObjectNode) entry).put("_links", Json.toJson(links));
-			return entry;
+	}
+	
+	private static class EntryResourceLinker extends JsonLinker {
+
+		private final Entry entry;
+
+		public EntryResourceLinker(Entry entry) {
+			this.entry = entry;
+		}
+
+		@Override
+		public JsonNode to() {
+			return appendEntryLinks(Json.toJson(entry));
 		}
 		
-		private Link entriesCollectionLink() {
-			return Link.make(routes.Entries.list().url(), LinkTypes.COLLECTION.asLowerCase());
-			
-		}
 	}
 	
 	private static class Link {
