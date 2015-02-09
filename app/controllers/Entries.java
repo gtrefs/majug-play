@@ -3,6 +3,7 @@ package controllers;
 import helper.JsonLinker;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import models.Entry;
@@ -32,7 +33,15 @@ public class Entries extends Controller {
     }
     
     public static Result delete(Integer id) {
-        return ok("delete id: " + id);
+    	return Optional
+    			.ofNullable(Entry.find.byId(id))
+    			.map(Entries::deleteNoContent)
+    			.orElse(notFound());
+    }
+    
+    private static Status deleteNoContent(Entry entry){
+    	entry.delete();
+    	return noContent();
     }
 
 }
