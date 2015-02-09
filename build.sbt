@@ -11,7 +11,9 @@ libraryDependencies ++= Seq(
   javaEbean,
   cache,
   javaWs,
-  "com.google.guava" % "guava" % "18.0"
+  "com.google.guava" % "guava" % "18.0",
+  "javax.el" % "javax.el-api" % "3.0.0",
+  "org.glassfish.web" % "el-impl" % "2.2"
 )
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
