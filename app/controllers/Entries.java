@@ -3,10 +3,11 @@ package controllers;
 import helper.JsonLinker;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import models.Entry;
+import play.libs.Json;
+import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -17,8 +18,19 @@ public class Entries extends Controller {
         return ok(JsonLinker.from(entries).to());
     }
     
+    @BodyParser.Of(BodyParser.Json.class)
     public static Result create() {
-        return ok("Your new application is ready.");
+    	return Optional.ofNullable(request().body().asJson())
+    			.map(node -> Json.fromJson(node, Entry.class))
+    			.map(Entries::saveAndSetLocationHeader)
+    			.map(entry -> created(JsonLinker.from(entry).to()))
+    			.orElse(badRequest());
+    }
+    
+    private static Entry saveAndSetLocationHeader(Entry entry){
+    	entry.save();
+    	response().setHeader(LOCATION, JsonLinker.getLocation(entry));
+    	return entry;
     }
     
     public static Result show(Integer id) {

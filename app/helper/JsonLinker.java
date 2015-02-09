@@ -24,6 +24,10 @@ public abstract class JsonLinker {
 		return new EntryResourceLinker(entry);
 	}
 	
+	public static String getLocation(Entry entry){
+		return routes.Entries.show(entry.id).url();
+	}
+	
 	public abstract JsonNode to();
 	
 	protected JsonNode appendEntryLinks(JsonNode entry){
