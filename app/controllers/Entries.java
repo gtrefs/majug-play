@@ -40,8 +40,19 @@ public class Entries extends Controller {
     			.orElse(notFound());
     }
     
+    @BodyParser.Of(BodyParser.Json.class)
     public static Result update(Integer id) {
-        return ok("update id: " + id);
+    	return Optional.ofNullable(Entry.find.byId(id))
+		.map(Entries::update)
+		.orElse(notFound());
+    }
+    
+    private static Status update(Entry entry){
+    	final Entry updatedEntry = Json.fromJson(request().body().asJson(), Entry.class);
+    	entry.setMessage(updatedEntry.message);
+    	entry.setTitle(updatedEntry.title);
+    	entry.update();
+    	return noContent();
     }
     
     public static Result delete(Integer id) {
