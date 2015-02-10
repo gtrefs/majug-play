@@ -1,12 +1,17 @@
 package controllers;
 
+import java.util.List;
+
+import models.Entry;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
 public class Entries extends Controller {
 
     public static Result list() {
-        return ok("Your new application is ready.");
+    	final List<Entry> entries = Entry.find.all();
+        return ok(Json.toJson(entries));
     }
     
     public static Result create() {
