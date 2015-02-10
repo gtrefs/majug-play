@@ -1,9 +1,10 @@
 package controllers;
 
+import helper.JsonLinker;
+
 import java.util.List;
 
 import models.Entry;
-import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -11,7 +12,7 @@ public class Entries extends Controller {
 
     public static Result list() {
     	final List<Entry> entries = Entry.find.all();
-        return ok(Json.toJson(entries));
+        return ok(JsonLinker.from(entries).to());
     }
     
     public static Result create() {
