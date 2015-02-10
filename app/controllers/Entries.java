@@ -3,6 +3,7 @@ package controllers;
 import helper.JsonLinker;
 
 import java.util.List;
+import java.util.Optional;
 
 import models.Entry;
 import play.mvc.Controller;
@@ -20,7 +21,10 @@ public class Entries extends Controller {
     }
     
     public static Result show(Integer id) {
-        return ok("show id: " + id);
+    	return Optional
+    			.ofNullable(Entry.find.byId(id))
+    			.map(entry -> ok(JsonLinker.from(entry).to()))
+    			.orElse(notFound());
     }
     
     public static Result update(Integer id) {
